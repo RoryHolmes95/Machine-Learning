@@ -9,6 +9,15 @@ from sklearn import linear_model
 from sklearn import model_selection
 from sklearn import metrics
 
+def avg_approx(row, data, group, fill, avgs):
+    x = (data[group].unique())
+    if pd.isnull(fill):
+        for i in x:
+            if group == i:
+                return avgs[i]
+    else:
+        return fill
+
 def multLogReg():
 
     '''Performs custom Multiple Logarithmic Regression on a dataset of the
@@ -25,7 +34,6 @@ def multLogReg():
         lst.append(0)
     for i in range(num):
         lst[i] = input(f"one at a time, select those columns from the following: {columns} ")
-    print (lst)
     for i in lst:
         if len(data[i].unique()) > 2:
             return "One of those fields has more than 2 possible values, please rectify and then retry"
@@ -37,19 +45,36 @@ def multLogReg():
         to_drop.append(0)
     for i in range(num1):
         to_drop[i] = input(f"one at a time, select those columns from the following: {columns} ")
-    print (to_drop)
     reduced = data.drop(to_drop, axis = 1)
+    reduced_columns = []
+    for i in (reduced):
+        reduced_columns.append(i)
     nulls = reduced.isnull().sum()
+    large_null = []
     for i in reduced:
-        print (i)
         if (nulls[i] > 0) & (nulls[i] <= 30):
             reduced.dropna(subset = [i], inplace=True)
-            print ("The few rows with null values for this field have been removed")
+            print (f"The few rows with null values for the field '{i}' have been removed")
         elif (nulls[i] > 30):
-            print (f"Sorry, too many null values in the field {i}, please rectify and then try again")
-            reduced = reduced.drop([i], axis = 1)    
+            print (f"the field {i}, has too many null values, these need to first be filled in using averages")
+            large_null += [i]
+            if len(large_null) > 1:
+                return "sorry, too many fields have too many null fields, please rectify  and try again"
+            else:
+                continue
         else:
             continue
-    print (reduced.info())
+    if len(large_null) > 0:
+        grouping_field = input(f"choose a field to group {large_null[0]} by from the following: {reduced_columns}")
+    grouping = reduced.groupby(reduced[(grouping_field)])[large_null]
+    means = (grouping.mean())
+    reduced[large_null] = reduced[large_null].apply(avg_approx, axis = 1, args = (reduced, grouping_field, large_null[0], means))
+    print (reduced.isnull().sum())
+
 
 multLogReg()
+
+
+
+
+avg_approx(reduced, grouping_field, large_null[0], means)

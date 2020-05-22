@@ -55,7 +55,7 @@ def multLogReg():
         if (nulls[i] > 0) & (nulls[i] <= 30):
             reduced.dropna(subset = [i], inplace=True)
             print (f"The few rows with null values for the field '{i}' have been removed")
-        elif (nulls[i] > 30):
+        elif (nulls[i] > 30) & (nulls[i] < (np.mean(reduced.count()))):
             print (f"the field {i}, has too many null values, these need to first be filled in using averages")
             large_null += [i]
             if len(large_null) > 1:
@@ -70,6 +70,7 @@ def multLogReg():
     means = (grouping.mean())
     reduced[large_null] = reduced[large_null].apply(avg_approx, axis = 1, args = (reduced, grouping_field, large_null[0], means))
     print (reduced.isnull().sum())
+
 
 
 multLogReg()

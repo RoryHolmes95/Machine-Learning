@@ -28,10 +28,12 @@ def multLogReg():
        users choosing'''
     address = input("Copy and paste your csv file here")
     data = pd.read_csv(address)
+    predictor = input("What is your chosen predictor?")
     cols = data.columns
     columns = []
     for i in (cols):
         columns.append(i)
+    columns.remove(predictor)
     num = int(input(f"How many of the following fields have binary answers? {columns}"))
     lst = []
     for i in range(num):
@@ -53,6 +55,7 @@ def multLogReg():
     reduced_columns = []
     for i in (reduced):
         reduced_columns.append(i)
+    reduced_columns.remove(predictor)
     nulls = reduced.isnull().sum()
     large_null = []
     for i in reduced:
@@ -72,7 +75,7 @@ def multLogReg():
         else:
             continue
     if len(large_null) > 0:
-        grouping_field = input(f"choose a field to group {large_null[0]} by from the following: {reduced_columns}")
+        grouping_field = input(f"'{large_null[0]}' has too many null values, choose a predictant to use in order to fill in the nulls with weighted averages: {reduced_columns}")
     grouping = reduced.groupby(reduced[(grouping_field)])[large_null[0]]
     means = (grouping.mean())
     reduced[large_null] = reduced[large_null].apply(avg_approx, axis = 1, args = (reduced, grouping_field, large_null[0], means))
@@ -100,13 +103,17 @@ def multLogReg():
     else:
         return "There are not enough fields for the number of predictants you have selected, please try again"
     categoricals = []
-    cat_data = int(input(f"How many of the remaining fields contain categorical answers with more than 2 possible answers? {reduced_columns}"))
+    red_cols = []
+    for redcols in (reduced.columns):
+        red_cols.append(redcols)
+    red_cols.remove(predictor)
+    cat_data = int(input(f"How many of the remaining fields contain categorical answers with more than 2 possible answers? {red_cols}"))
     reduced.dropna(inplace=True)
     if cat_data > 0:
         for i in range(cat_data):
             categoricals += [0]
         for i in categoricals:
-            categoricals[i] = input(f"Once at a time, name those categories: {reduced_columns}")
+            categoricals[i] = input(f"Once at a time, name those categories: {red_cols}")
         for i in categoricals:
             cat_var = reduced[i]
             cat_encoded = label_encoder.fit_transform(cat_var)
@@ -123,7 +130,6 @@ def multLogReg():
             reduced = reduced.drop([i], axis = 1)
             reduced = pd.concat([reduced, cat_DF], axis = 1)
     reduced.dropna(inplace=True)
-    predictor = input("What is your chosen predictor?")
     predictant_train, predictant_test, predictor_train, predictor_test = model_selection.train_test_split(reduced.drop([predictor], axis = 1), reduced[predictor], test_size = 0.2, random_state = 200)
     LogReg = linear_model.LogisticRegression(solver = 'liblinear')
     LogReg.fit(predictant_train, predictor_train)
@@ -142,7 +148,7 @@ def multLogReg():
     else:
         return f"There is a {((LogReg.predict_proba(test_passenger)[0][1])*100):.3f}% chance that this passenger would have survived."
 
-    
+
 
 
 

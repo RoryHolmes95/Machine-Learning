@@ -104,7 +104,7 @@ def multLogReg():
     if cat_data > 0:
         for i in range(cat_data):
             categoricals += [0]
-        for i in categoricals:
+        for i in range(cat_data):
             categoricals[i] = input(f"Once at a time, name those categories: {red_cols}")
         for i in categoricals:
             cat_var = reduced[i]
@@ -121,7 +121,7 @@ def multLogReg():
             cat_DF = pd.DataFrame(make_array, columns = headers)
             reduced = reduced.drop([i], axis = 1)
             reduced = pd.concat([reduced, cat_DF], axis = 1)
-    reduced.dropna(inplace=True)
+            reduced.dropna(inplace=True)
     predictant_train, predictant_test, predictor_train, predictor_test = model_selection.train_test_split(reduced.drop([predictor], axis = 1), reduced[predictor], test_size = 0.2, random_state = 200)
     LogReg = linear_model.LogisticRegression(solver = 'liblinear')
     LogReg.fit(predictant_train, predictor_train)
@@ -129,8 +129,10 @@ def multLogReg():
     class_report = metrics.classification_report(predictor_test, predicting)
     cross = model_selection.cross_val_predict(LogReg, predictant_train, predictor_train, cv = 5)
     conf = metrics.confusion_matrix(predictor_train, cross)
+    print (conf)
     precision = metrics.precision_score(predictor_train, cross)
     print (f"This prediction engine has a precision of {precision:.3f}" )
+    print (len(reduced))
     test_passenger = []
     num_of_columns = len(reduced.drop([predictor], axis = 1).columns)
     for col in range(num_of_columns):

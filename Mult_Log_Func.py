@@ -95,6 +95,10 @@ def multLogReg():
             DF = pd.DataFrame(encoded, columns = [i])
             reduced = reduced.drop([i], axis = 1)
             reduced = pd.concat([reduced, DF], axis = 1)
+    if (np.mean(reduced.count())/len(reduced.columns)-1) > 50:
+        print ("Enough predictants to proceed...")
+    else:
+        return "There are not enough fields for the number of predictants you have selected, please try again"
     categoricals = []
     cat_data = int(input(f"How many of the remaining fields contain categorical answers with more than 2 possible answers? {reduced_columns}"))
     reduced.dropna(inplace=True)
@@ -120,6 +124,7 @@ def multLogReg():
             reduced = pd.concat([reduced, cat_DF], axis = 1)
     reduced.dropna(inplace=True)
     print (reduced.info())
+    print (np.mean(reduced.count()))
 
 
 

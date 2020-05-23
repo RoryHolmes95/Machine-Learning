@@ -65,9 +65,9 @@ def multLogReg():
             continue
     if len(large_null) > 0:
         grouping_field = input(f"'{large_null[0]}' has too many null values, choose a predictant to use in order to fill in the nulls with weighted averages: {reduced_columns}")
-    grouping = reduced.groupby(reduced[(grouping_field)])[large_null[0]]
-    means = (grouping.mean())
-    reduced[large_null] = reduced[large_null].apply(avg_approx, axis = 1, args = (reduced, grouping_field, large_null[0], means))
+        grouping = reduced.groupby(reduced[(grouping_field)])[large_null[0]]
+        means = (grouping.mean())
+        reduced[large_null] = reduced[large_null].apply(avg_approx, axis = 1, args = (reduced, grouping_field, large_null[0], means))
     for name in reduced.corr():
         for each in reduced.corr()[name]:
             if ((each < -0.5) & (each != -1.0)) | ((each > 0.5) & (each != 1.0)):
@@ -131,7 +131,6 @@ def multLogReg():
     conf = metrics.confusion_matrix(predictor_train, cross)
     print (f"Out of {sum(sum(conf))} results, there were {conf[0][1]} false positives, and {conf[1][0]} false negatives")
     precision = metrics.precision_score(predictor_train, cross)
-    print (f"This prediction engine has a precision of {precision:.3f}")
     test_passenger = []
     num_of_columns = len(reduced.drop([predictor], axis = 1).columns)
     for col in range(num_of_columns):
@@ -142,10 +141,10 @@ def multLogReg():
     test_passenger = np.array(test_passenger).reshape(1,-1)
     survived = (LogReg.predict(test_passenger))
     if survived[0] == 0:
-        return f"There is a {((LogReg.predict_proba(test_passenger)[0][0])*100):.3f}% chance that this passenger would have died."
+        print (f"There is a {((LogReg.predict_proba(test_passenger)[0][0])*100):.3f}% chance that this passenger would have died.")
     else:
-        return f"There is a {((LogReg.predict_proba(test_passenger)[0][1])*100):.3f}% chance that this passenger would have survived."
+        print (f"There is a {((LogReg.predict_proba(test_passenger)[0][1])*100):.3f}% chance that this passenger would have survived.")
+    return f"This prediction engine has a precision of {precision:.3f}"
 
 
 multLogReg()
-1

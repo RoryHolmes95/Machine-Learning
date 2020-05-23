@@ -123,9 +123,26 @@ def multLogReg():
             reduced = reduced.drop([i], axis = 1)
             reduced = pd.concat([reduced, cat_DF], axis = 1)
     reduced.dropna(inplace=True)
-    print (reduced.info())
-    print (np.mean(reduced.count()))
+    predictor = input("What is your chosen predictor?")
+    predictant_train, predictant_test, predictor_train, predictor_test = model_selection.train_test_split(reduced.drop([predictor], axis = 1), reduced[predictor], test_size = 0.2, random_state = 200)
+    LogReg = linear_model.LogisticRegression(solver = 'liblinear')
+    LogReg.fit(predictant_train, predictor_train)
+    predicting = LogReg.predict(predictant_test)
+    print (metrics.classification_report(predictor_test, predicting))
+    test_passenger = []
+    num_of_columns = len(reduced.drop([predictor], axis = 1).columns)
+    for col in range(num_of_columns):
+        test_passenger += [0]
+    for num in range(len(test_passenger)):
+        test_passenger[num] = int(input(f"One by one, fill in your predictions into the following predictants: {reduced.drop([predictor], axis = 1).columns}"))
+    test_passenger = np.array(test_passenger).reshape(1,-1)
+    survived = (LogReg.predict(test_passenger))
+    if survived[0] == 0:
+        return f"There is a {((LogReg.predict_proba(test_passenger)[0][0])*100):.3f}% chance that this passenger would have died."
+    else:
+        return f"There is a {((LogReg.predict_proba(test_passenger)[0][1])*100):.3f}% chance that this passenger would have survived."
 
+    
 
 
 

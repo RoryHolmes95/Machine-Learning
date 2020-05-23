@@ -129,16 +129,16 @@ def multLogReg():
     class_report = metrics.classification_report(predictor_test, predicting)
     cross = model_selection.cross_val_predict(LogReg, predictant_train, predictor_train, cv = 5)
     conf = metrics.confusion_matrix(predictor_train, cross)
-    print (conf)
+    print (f"Out of {sum(sum(conf))} results, there were {conf[0][1]} false positives, and {conf[1][0]} false negatives")
     precision = metrics.precision_score(predictor_train, cross)
-    print (f"This prediction engine has a precision of {precision:.3f}" )
-    print (len(reduced))
+    print (f"This prediction engine has a precision of {precision:.3f}")
     test_passenger = []
     num_of_columns = len(reduced.drop([predictor], axis = 1).columns)
     for col in range(num_of_columns):
         test_passenger += [0]
     for num in range(len(test_passenger)):
         test_passenger[num] = int(input(f"One by one, fill in your predictions into the following predictants: {reduced.drop([predictor], axis = 1).columns}"))
+        print (f"{reduced.drop([predictor],axis=1).columns[num]} : {test_passenger[num]}")
     test_passenger = np.array(test_passenger).reshape(1,-1)
     survived = (LogReg.predict(test_passenger))
     if survived[0] == 0:
@@ -148,3 +148,4 @@ def multLogReg():
 
 
 multLogReg()
+1

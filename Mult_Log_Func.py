@@ -34,17 +34,6 @@ def multLogReg():
     for i in (cols):
         columns.append(i)
     columns.remove(predictor)
-    num = int(input(f"How many of the following fields have binary answers? {columns}"))
-    lst = []
-    for i in range(num):
-        lst.append(0)
-    for i in range(num):
-        lst[i] = input(f"One at a time, select those columns from the following: {columns} ")
-    for i in lst:
-        if len(data[i].unique()) > 2:
-            return "One of those fields has more than 2 possible values, please rectify and then retry"
-        else:
-            continue
     num1 = int(input(f"how many of the following fields are neither the predictor or predictants? {columns}"))
     to_drop = []
     for i in range(num1):
@@ -85,13 +74,16 @@ def multLogReg():
                 print (f"Unable to verify if two variables are independent, '{name}' has been dropped.")
                 reduced = reduced.drop([name], axis=1)
     binaries = []
-    num_of_binaries = int(input("How many of the binary fields are remaining?"))
+    num_of_binaries = int(input(f"How many of the following fields have binary answers? {reduced_columns}"))
     label_encoder = preprocessing.LabelEncoder()
     if num_of_binaries > 0:
         for i in range(num_of_binaries):
             binaries += [0]
         for i in binaries:
             binaries[i] = input(f"One at a time, please list these fields: {reduced_columns}")
+        for i in binaries:
+            if len(data[i].unique()) > 2:
+                return "One of those fields has more than 2 possible values, please rectify and then retry"
         for i in binaries:
             Var = reduced[i]
             encoded = label_encoder.fit_transform(Var)
@@ -134,7 +126,11 @@ def multLogReg():
     LogReg = linear_model.LogisticRegression(solver = 'liblinear')
     LogReg.fit(predictant_train, predictor_train)
     predicting = LogReg.predict(predictant_test)
-    print (metrics.classification_report(predictor_test, predicting))
+    class_report = metrics.classification_report(predictor_test, predicting)
+    cross = model_selection.cross_val_predict(LogReg, predictant_train, predictor_train, cv = 5)
+    conf = metrics.confusion_matrix(predictor_train, cross)
+    precision = metrics.precision_score(predictor_train, cross)
+    print (f"This prediction engine has a precision of {precision:.3f}" )
     test_passenger = []
     num_of_columns = len(reduced.drop([predictor], axis = 1).columns)
     for col in range(num_of_columns):
@@ -147,9 +143,6 @@ def multLogReg():
         return f"There is a {((LogReg.predict_proba(test_passenger)[0][0])*100):.3f}% chance that this passenger would have died."
     else:
         return f"There is a {((LogReg.predict_proba(test_passenger)[0][1])*100):.3f}% chance that this passenger would have survived."
-
-
-
 
 
 multLogReg()

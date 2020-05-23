@@ -85,7 +85,7 @@ def multLogReg():
                 print (f"Unable to verify if two variables are independent, '{name}' has been dropped.")
                 reduced = reduced.drop([name], axis=1)
     binaries = []
-    num_of_binaries = int(input("How many of the binary fields are remaining? Please do not include the predictor"))
+    num_of_binaries = int(input("How many of the binary fields are remaining?"))
     label_encoder = preprocessing.LabelEncoder()
     if num_of_binaries > 0:
         for i in range(num_of_binaries):

@@ -73,8 +73,9 @@ def multLogReg():
         for each in reduced.corr()[name]:
             if ((each < -0.5) & (each != -1.0)) | ((each > 0.5) & (each != 1.0)):
                 ind_var += [name]
-    to_delete = input(f"Python has found the following two variables that are believed not to be independent {ind_var}, please choose one to be removed")
-    reduced = reduced.drop(to_delete, axis = 1)
+    if len(ind_var) > 0:
+        to_delete = input(f"Python has found the following two variables that are believed not to be independent {ind_var}, please choose one to be removed")
+        reduced = reduced.drop(to_delete, axis = 1)
     binaries = []
     num_of_binaries = int(input(f"How many of the following fields have binary answers? {reduced_columns}"))
     label_encoder = preprocessing.LabelEncoder()
@@ -120,7 +121,7 @@ def multLogReg():
                 headers += [0]
             for j in range(len(headers)):
                 headers[j] = reduced[i].unique()[j]
-            cat_DF = pd.DataFrame(make_array, columns = headers)
+            cat_DF = pd.DataFrame(make_array, columns = sorted(headers))
             reduced = reduced.drop([i], axis = 1)
             reduced = pd.concat([reduced, cat_DF], axis = 1)
             reduced.dropna(inplace=True)

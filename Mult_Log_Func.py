@@ -104,6 +104,8 @@ def multLogReg():
     red_cols.remove(predictant)
     cat_data = int(input(f"How many of the remaining fields contain categorical answers with more than 2 possible answers? {red_cols}"))
     reduced.dropna(inplace=True)
+    newlist = []
+    list_for_lengths = []
     if cat_data > 0:
         for i in range(cat_data):
             categoricals += [0]
@@ -117,11 +119,13 @@ def multLogReg():
             make_array = catvar1hot.toarray()
             headers = []
             num_of_headers = len((reduced[i].unique()))
+            list_for_lengths += [num_of_headers]
             for k in range(num_of_headers):
                 headers += [0]
             for j in range(len(headers)):
                 headers[j] = reduced[i].unique()[j]
             cat_DF = pd.DataFrame(make_array, columns = sorted(headers))
+            newlist += [cat_DF.columns]
             reduced = reduced.drop([i], axis = 1)
             reduced = pd.concat([reduced, cat_DF], axis = 1)
             reduced.dropna(inplace=True)
@@ -134,13 +138,33 @@ def multLogReg():
     conf = metrics.confusion_matrix(predictant_train, cross)
     print (f"Out of {sum(sum(conf))} results, there were {conf[0][1]} false positives, and {conf[1][0]} false negatives")
     precision = metrics.precision_score(predictant_train, cross)
+    cat_list = []
+    for it in newlist:
+        for that in it:
+            cat_list += [that]
+    list_without_cats = (reduced.drop(cat_list, axis = 1))
+    list_without_cats_cols = list_without_cats.columns
+    list_only_cats = (reduced.drop(list_without_cats, axis = 1))
+    list_only_cats_cols = list_only_cats.columns
     test_passenger = []
     num_of_columns = len(reduced.drop([predictant], axis = 1).columns)
-    for col in range(num_of_columns):
+    for col in range(len(list_without_cats.columns)-1):
         test_passenger += [0]
-    for num in range(len(test_passenger)):
-        test_passenger[num] = int(input(f"One by one, fill in your predictions into the following predictors: {reduced.drop([predictant], axis = 1).columns}"))
+    for num in range(len(list_without_cats.columns)-1):
+        test_passenger[num] = int(input(f"One by one, fill in your predictions into the following predictors: {list_without_cats.drop(predictant, axis = 1).columns}"))
         print (f"{reduced.drop([predictant],axis=1).columns[num]} : {test_passenger[num]}")
+
+    for cats in categoricals:
+        lst = np.zeros(list_for_lengths[categoricals.index(cats)])
+        choose = (input(f"Choose an answer from the following list for {newlist[categoricals.index(cats)]}"))
+        for loop in newlist[categoricals.index(cats)]:
+            if choose == loop:
+                lst[(np.where(newlist[categoricals.index(cats)] == loop))] = 1
+        fml = []
+        for jj in lst:
+            fml += [int(jj)]
+        test_passenger.extend(lst)
+        print (f"{cats} : {choose}")
     test_passenger = np.array(test_passenger).reshape(1,-1)
     survived = (LogReg.predict(test_passenger))
     if survived[0] == 0:

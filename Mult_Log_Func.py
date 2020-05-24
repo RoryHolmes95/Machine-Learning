@@ -113,11 +113,11 @@ def multLogReg():
             catvar1hot = onehot.fit_transform(cat_encoded.reshape(-1,1))
             make_array = catvar1hot.toarray()
             headers = []
-            num_of_headers = int(input(f"how many different possible answers are there in the {i} field?"))
+            num_of_headers = len((reduced[i].unique()))
             for k in range(num_of_headers):
                 headers += [0]
             for j in range(len(headers)):
-                headers[j] = input("Once at a time, name those answers")
+                headers[j] = reduced[i].unique()[j]
             cat_DF = pd.DataFrame(make_array, columns = headers)
             reduced = reduced.drop([i], axis = 1)
             reduced = pd.concat([reduced, cat_DF], axis = 1)

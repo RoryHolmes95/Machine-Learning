@@ -68,11 +68,13 @@ def multLogReg():
         grouping = reduced.groupby(reduced[(grouping_field)])[large_null[0]]
         means = (grouping.mean())
         reduced[large_null] = reduced[large_null].apply(avg_approx, axis = 1, args = (reduced, grouping_field, large_null[0], means))
+    ind_var = []
     for name in reduced.corr():
         for each in reduced.corr()[name]:
             if ((each < -0.5) & (each != -1.0)) | ((each > 0.5) & (each != 1.0)):
-                print (f"Unable to verify if two variables are independent, '{name}' has been dropped.")
-                reduced = reduced.drop([name], axis=1)
+                ind_var += [name]
+    to_delete = input(f"Python has found the following two variables that are believed not to be independent {ind_var}, please choose one to be removed")
+    reduced = reduced.drop(to_delete, axis = 1)
     binaries = []
     num_of_binaries = int(input(f"How many of the following fields have binary answers? {reduced_columns}"))
     label_encoder = preprocessing.LabelEncoder()

@@ -77,13 +77,11 @@ def multLogReg():
         to_delete = input(f"Python has found the following two variables that are believed not to be independent {ind_var}, please choose one to be removed")
         reduced = reduced.drop(to_delete, axis = 1)
     binaries = []
-    num_of_binaries = int(input(f"How many of the following fields have binary answers? {reduced_columns}"))
+    for bin in reduced.columns:
+        if (len((data[bin].unique())) == 2) & (bin != predictant):
+            binaries += [bin]
     label_encoder = preprocessing.LabelEncoder()
-    if num_of_binaries > 0:
-        for i in range(num_of_binaries):
-            binaries += [0]
-        for i in binaries:
-            binaries[i] = input(f"One at a time, please list these fields: {reduced_columns}")
+    if len(binaries) > 0:
         for i in binaries:
             if len(data[i].unique()) > 2:
                 return "One of those fields has more than 2 possible values, please rectify and then retry"

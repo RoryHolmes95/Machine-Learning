@@ -149,7 +149,7 @@ def multLogReg():
     for col in range(len(list_without_cats.columns)-1):
         test_passenger += [0]
     for num in range(len(list_without_cats.columns)-1):
-        test_passenger[num] = int(input(f"One by one, fill in your predictions into the following predictors: {list_without_cats.drop(predictant, axis = 1).columns}"))
+        test_passenger[num] = float(input(f"One by one, fill in your predictions into the following predictors: {list_without_cats.drop(predictant, axis = 1).columns}"))
         print (f"{reduced.drop([predictant],axis=1).columns[num]} : {test_passenger[num]}")
 
     for cats in categoricals:

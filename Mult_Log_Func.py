@@ -144,7 +144,7 @@ def multLogReg():
         print (f"There is a {((LogReg.predict_proba(test_passenger)[0][0])*100):.3f}% chance that this passenger would have died.")
     else:
         print (f"There is a {((LogReg.predict_proba(test_passenger)[0][1])*100):.3f}% chance that this passenger would have survived.")
-    return f"This prediction engine has a precision of {precision:.3f}"
+    print (f"This prediction engine has a precision of {precision:.3f}")
 
 
 multLogReg()

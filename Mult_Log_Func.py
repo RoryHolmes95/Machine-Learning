@@ -124,7 +124,6 @@ def multLogReg():
         reduced = reduced.drop([i], axis = 1)
         reduced = pd.concat([reduced, cat_DF], axis = 1)
         reduced.dropna(inplace=True)
-    print (reduced.head())
     predictor_train, predictor_test, predictant_train, predictant_test = model_selection.train_test_split(reduced.drop([predictant], axis = 1), reduced[predictant], test_size = 0.2, random_state = 200)
     LogReg = linear_model.LogisticRegression(solver = 'liblinear')
     LogReg.fit(predictor_train, predictant_train)
@@ -159,19 +158,16 @@ def multLogReg():
         for loop in anotherone:
             if (str(loop)) == ((choose)):
                 lst[(np.where(newlist[categoricals.index(cats)] == loop))] = 1
-        fml = []
-        for jj in lst:
-            fml += [int(jj)]
         test_passenger.extend(lst)
         print (f"{cats} : {choose}")
-    print (test_passenger)
     test_passenger = np.array(test_passenger).reshape(1,-1)
     survived = (LogReg.predict(test_passenger))
     if survived[0] == 0:
         print (f"There is a {((LogReg.predict_proba(test_passenger)[0][0])*100):.3f}% chance that this passenger would have died.")
     else:
         print (f"There is a {((LogReg.predict_proba(test_passenger)[0][1])*100):.3f}% chance that this passenger would have survived.")
-    print (f"This prediction engine has a precision of {precision:.3f}")
+    print (f"This prediction engine has a precision of {precision:.3f} and an accuracy of {(metrics.accuracy_score(predictant_train, cross)):.3f}")
+
 
 
 multLogReg()

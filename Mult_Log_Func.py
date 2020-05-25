@@ -78,12 +78,12 @@ def multLogReg():
         reduced = reduced.drop(to_delete, axis = 1)
     binaries = []
     for bin in reduced.columns:
-        if (len((data[bin].unique())) == 2) & (bin != predictant):
+        if (len((reduced[bin].unique())) == 2) & (bin != predictant):
             binaries += [bin]
     label_encoder = preprocessing.LabelEncoder()
     if len(binaries) > 0:
         for i in binaries:
-            if len(data[i].unique()) > 2:
+            if len(reduced[i].unique()) > 2:
                 return "One of those fields has more than 2 possible values, please rectify and then retry"
         for i in binaries:
             Var = reduced[i]
@@ -100,33 +100,31 @@ def multLogReg():
     for redcols in (reduced.columns):
         red_cols.append(redcols)
     red_cols.remove(predictant)
-    cat_data = int(input(f"How many of the remaining fields contain categorical answers with more than 2 possible answers? {red_cols}"))
+    for catlist in red_cols:
+        if  ((len(reduced[catlist].unique()) < len(reduced[catlist])/20)):
+            categoricals += [catlist]
     reduced.dropna(inplace=True)
     newlist = []
     list_for_lengths = []
-    if cat_data > 0:
-        for i in range(cat_data):
-            categoricals += [0]
-        for i in range(cat_data):
-            categoricals[i] = input(f"Once at a time, name those categories: {red_cols}")
-        for i in categoricals:
-            cat_var = reduced[i]
-            cat_encoded = label_encoder.fit_transform(cat_var)
-            onehot = preprocessing.OneHotEncoder(categories='auto')
-            catvar1hot = onehot.fit_transform(cat_encoded.reshape(-1,1))
-            make_array = catvar1hot.toarray()
-            headers = []
-            num_of_headers = len((reduced[i].unique()))
-            list_for_lengths += [num_of_headers]
-            for k in range(num_of_headers):
-                headers += [0]
-            for j in range(len(headers)):
-                headers[j] = reduced[i].unique()[j]
-            cat_DF = pd.DataFrame(make_array, columns = sorted(headers))
-            newlist += [cat_DF.columns]
-            reduced = reduced.drop([i], axis = 1)
-            reduced = pd.concat([reduced, cat_DF], axis = 1)
-            reduced.dropna(inplace=True)
+    for i in categoricals:
+        cat_var = reduced[i]
+        cat_encoded = label_encoder.fit_transform(cat_var)
+        onehot = preprocessing.OneHotEncoder(categories='auto')
+        catvar1hot = onehot.fit_transform(cat_encoded.reshape(-1,1))
+        make_array = catvar1hot.toarray()
+        headers = []
+        num_of_headers = len((reduced[i].unique()))
+        list_for_lengths += [num_of_headers]
+        for k in range(num_of_headers):
+            headers += [0]
+        for j in range(len(headers)):
+            headers[j] = reduced[i].unique()[j]
+        cat_DF = pd.DataFrame(make_array, columns = sorted(headers))
+        newlist += [cat_DF.columns]
+        reduced = reduced.drop([i], axis = 1)
+        reduced = pd.concat([reduced, cat_DF], axis = 1)
+        reduced.dropna(inplace=True)
+    print (reduced.head())
     predictor_train, predictor_test, predictant_train, predictant_test = model_selection.train_test_split(reduced.drop([predictant], axis = 1), reduced[predictant], test_size = 0.2, random_state = 200)
     LogReg = linear_model.LogisticRegression(solver = 'liblinear')
     LogReg.fit(predictor_train, predictant_train)
@@ -149,20 +147,24 @@ def multLogReg():
     for col in range(len(list_without_cats.columns)-1):
         test_passenger += [0]
     for num in range(len(list_without_cats.columns)-1):
-        test_passenger[num] = float(input(f"One by one, fill in your predictions into the following predictors: {list_without_cats.drop(predictant, axis = 1).columns}"))
+        test_passenger[num] = float(input(f"One by one, fill in your predictions into the following predictors: {list_without_cats.drop(predictant, axis = 1).columns.values}"))
         print (f"{reduced.drop([predictant],axis=1).columns[num]} : {test_passenger[num]}")
-
     for cats in categoricals:
         lst = np.zeros(list_for_lengths[categoricals.index(cats)])
-        choose = (input(f"Choose an answer from the following list for {newlist[categoricals.index(cats)]}"))
-        for loop in newlist[categoricals.index(cats)]:
-            if choose == loop:
+        choose = (input(f"""For {cats}, choose an answer: (the following are the results displayed in the inputted dataset: {newlist[categoricals.index(cats)].values}
+        please note, if your answer is numerical i.e 2, please return in float form, i.e. 2.0"""))
+        anotherone = np.array([])
+        for num in newlist[categoricals.index(cats)].values:
+            anotherone = np.append(anotherone, [num])
+        for loop in anotherone:
+            if (str(loop)) == ((choose)):
                 lst[(np.where(newlist[categoricals.index(cats)] == loop))] = 1
         fml = []
         for jj in lst:
             fml += [int(jj)]
         test_passenger.extend(lst)
         print (f"{cats} : {choose}")
+    print (test_passenger)
     test_passenger = np.array(test_passenger).reshape(1,-1)
     survived = (LogReg.predict(test_passenger))
     if survived[0] == 0:

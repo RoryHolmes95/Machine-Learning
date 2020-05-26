@@ -76,21 +76,7 @@ def multLogReg():
     if len(ind_var) > 0:
         to_delete = input(f"Python has found the following two variables that are believed not to be independent {ind_var}, please choose one to be removed")
         reduced = reduced.drop(to_delete, axis = 1)
-    binaries = []
-    for bin in reduced.columns:
-        if (len((reduced[bin].unique())) == 2) & (bin != predictant):
-            binaries += [bin]
     label_encoder = preprocessing.LabelEncoder()
-    if len(binaries) > 0:
-        for i in binaries:
-            if len(reduced[i].unique()) > 2:
-                return "One of those fields has more than 2 possible values, please rectify and then retry"
-        for i in binaries:
-            Var = reduced[i]
-            encoded = label_encoder.fit_transform(Var)
-            DF = pd.DataFrame(encoded, columns = [i])
-            reduced = reduced.drop([i], axis = 1)
-            reduced = pd.concat([reduced, DF], axis = 1)
     if (np.mean(reduced.count())/len(reduced.columns)-1) > 50:
         print ("Enough predictors to proceed...")
     else:

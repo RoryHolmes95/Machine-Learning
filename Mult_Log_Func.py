@@ -34,12 +34,11 @@ def multLogReg():
     for i in (cols):
         columns.append(i)
     columns.remove(predictant)
-    num1 = int(input(f"how many of the following fields are neither the predictant or predictors? {columns}"))
     to_drop = []
-    for i in range(num1):
-        to_drop.append(0)
-    for i in range(num1):
-        to_drop[i] = input(f"one at a time, select those columns from the following: {columns} ")
+    for fields in columns:
+        if (len(data[fields].unique())) > ((2/3)*len(data[fields])):
+            to_drop += [fields]
+    print (f"The following fields were deemed unsuitable predictors: {to_drop})")
     reduced = data.drop(to_drop, axis = 1)
     reduced_columns = []
     for i in (reduced):

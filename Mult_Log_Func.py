@@ -40,6 +40,12 @@ def multLogReg():
             to_drop += [fields]
     print (f"The following fields were deemed unsuitable predictors: {to_drop})")
     reduced = data.drop(to_drop, axis = 1)
+    drop_more = (input(f"The program has filtered out the following unsuitable fields {to_drop}, would you like to remove another? (y/n) {reduced.columns.values}"))
+    while drop_more == 'y':
+        drop_what = input(f"Which field would you like to drop? {reduced.columns.values}")
+        print (f"You have dropped: '{drop_what}'")
+        reduced = reduced.drop(drop_what, axis = 1)
+        drop_more = input("Do you want to drop any more? (y/n)")
     reduced_columns = []
     for i in (reduced):
         reduced_columns.append(i)

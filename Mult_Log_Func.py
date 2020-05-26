@@ -92,8 +92,9 @@ def multLogReg():
         red_cols.append(redcols)
     red_cols.remove(predictant)
     for catlist in red_cols:
-        if  ((len(reduced[catlist].unique()) < len(reduced[catlist])/20)):
+        if  ((len(reduced[catlist].unique()) < len(reduced[catlist])/20)) & ((reduced[catlist].dtypes) == 'object'):
             categoricals += [catlist]
+            print (reduced[catlist].dtypes)
     reduced.dropna(inplace=True)
     newlist = []
     list_for_lengths = []
@@ -115,7 +116,7 @@ def multLogReg():
         reduced = reduced.drop([i], axis = 1)
         reduced = pd.concat([reduced, cat_DF], axis = 1)
         reduced.dropna(inplace=True)
-    predictor_train, predictor_test, predictant_train, predictant_test = model_selection.train_test_split(reduced.drop([predictant], axis = 1), reduced[predictant], test_size = 0.2, random_state = 200)
+    predictor_train, predictor_test, predictant_train, predictant_test = model_selection.train_test_split(reduced.drop([predictant], axis = 1), reduced[predictant], test_size = 0.5, random_state = 200)
     LogReg = linear_model.LogisticRegression(solver = 'liblinear')
     LogReg.fit(predictor_train, predictant_train)
     predicting = LogReg.predict(predictor_test)
@@ -141,8 +142,7 @@ def multLogReg():
         print (f"{reduced.drop([predictant],axis=1).columns[num]} : {test_passenger[num]}")
     for cats in categoricals:
         lst = np.zeros(list_for_lengths[categoricals.index(cats)])
-        choose = (input(f"""For {cats}, choose an answer: (the following are the results displayed in the inputted dataset: {newlist[categoricals.index(cats)].values}
-        please note, if your answer is numerical i.e 2, please return in float form, i.e. 2.0"""))
+        choose = (input(f"For {cats}, choose an answer: (the following are the results displayed in the inputted dataset: {newlist[categoricals.index(cats)].values}"))
         anotherone = np.array([])
         for num in newlist[categoricals.index(cats)].values:
             anotherone = np.append(anotherone, [num])

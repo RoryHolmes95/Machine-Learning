@@ -28,7 +28,9 @@ def multLogReg():
        users choosing'''
     address = input("Copy and paste your csv file here")
     data = pd.read_csv(address)
-    predictant = input("What is your chosen predictant?")
+    predictant = input(f"What is your chosen predictant? {data.columns.values}")
+    while predictant not in data.columns.values:
+        predictant = input(f"That was not a valid input, perhaps check your spelling? {data.columns.values}")
     cols = data.columns
     columns = []
     for i in (cols):
@@ -41,11 +43,17 @@ def multLogReg():
     print (f"The following fields were deemed unsuitable predictors: {to_drop})")
     reduced = data.drop(to_drop, axis = 1)
     drop_more = (input(f"The program has filtered out the following unsuitable fields {to_drop}, would you like to remove another? (y/n) {reduced.columns.values}"))
+    while drop_more not in ['y', 'n']:
+        drop_more = input(f"try again, y for yes, or n for no {reduced.columns.values}")
     while drop_more == 'y':
         drop_what = input(f"Which field would you like to drop? {reduced.columns.values}")
+        while  drop_what not in reduced.columns.values:
+            drop_what = input(f"That was not a valid input, perhaps check your spelling? {reduced.columns.values}")
         print (f"You have dropped: '{drop_what}'")
         reduced = reduced.drop(drop_what, axis = 1)
         drop_more = input("Do you want to drop any more? (y/n)")
+        while drop_more not in ['y', 'n']:
+            drop_more = input("try again, y for yes, or n for no")
     reduced_columns = []
     for i in (reduced):
         reduced_columns.append(i)
@@ -70,6 +78,8 @@ def multLogReg():
             continue
     if len(large_null) > 0:
         grouping_field = input(f"'{large_null[0]}' has too many null values, choose a predictor to use in order to fill in the nulls with weighted averages: {reduced_columns}")
+        while grouping_field not in reduced_columns:
+            grouping_field = input(f"That was not a valid input, perhaps check your spelling? {reduced_columns}")
         grouping = reduced.groupby(reduced[(grouping_field)])[large_null[0]]
         means = (grouping.mean())
         reduced[large_null] = reduced[large_null].apply(avg_approx, axis = 1, args = (reduced, grouping_field, large_null[0], means))
@@ -80,6 +90,8 @@ def multLogReg():
                 ind_var += [name]
     if len(ind_var) > 0:
         to_delete = input(f"Python has found the following two variables that are believed not to be independent {ind_var}, please choose one to be removed")
+        while to_delete not in ind_var:
+            to_delete = (f"That was not a valid input, perhaps check your spelling? {ind_var}")
         reduced = reduced.drop(to_delete, axis = 1)
     label_encoder = preprocessing.LabelEncoder()
     if (np.mean(reduced.count())/len(reduced.columns)-1) > 50:
@@ -94,7 +106,6 @@ def multLogReg():
     for catlist in red_cols:
         if  ((len(reduced[catlist].unique()) < len(reduced[catlist])/20)) & ((reduced[catlist].dtypes) == 'object'):
             categoricals += [catlist]
-            print (reduced[catlist].dtypes)
     reduced.dropna(inplace=True)
     newlist = []
     list_for_lengths = []
@@ -143,6 +154,8 @@ def multLogReg():
     for cats in categoricals:
         lst = np.zeros(list_for_lengths[categoricals.index(cats)])
         choose = (input(f"For {cats}, choose an answer: (the following are the results displayed in the inputted dataset: {newlist[categoricals.index(cats)].values}"))
+        while choose not in newlist[categoricals.index(cats)].values:
+            choose = input(f"That was not a valid input, perhaps check your spelling? {newlist[categoricals.index(cats)].values}")
         anotherone = np.array([])
         for num in newlist[categoricals.index(cats)].values:
             anotherone = np.append(anotherone, [num])

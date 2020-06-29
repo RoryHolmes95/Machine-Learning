@@ -113,4 +113,5 @@ def add_data(x):
     print (DataBase)
     DataBase.to_csv("PlayerInfo.csv")
 
+#initiate function
 add_data(initial_scrape())

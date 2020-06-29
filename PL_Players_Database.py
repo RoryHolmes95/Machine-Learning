@@ -7,6 +7,7 @@ import pandas as pd
 import requests
 import re
 import numpy as np
+import datetime
 
 
 def initial_scrape():
@@ -93,12 +94,17 @@ def add_data(x):
         else:
             goals = goals.text.replace('\n', '')
             goal_list.append(goals)
-        age = soup.find("span", {"class" : "info--light"})
-        if age is None:
+        for link in soup.find_all('div',{"class" : "info"} ):
+            if '/' in link.text:
+                x = link.text
+                y = x.replace(" ", "")
+                date = y
+                born = datetime.date(int(y[7:11]), int((y[4:6])), int((y[1:3])))
+                now = datetime.date.today()
+                age = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+        if type(age) != int:
             age_list.append(np.NaN)
         else:
-            age = age.text.replace('(','')
-            age = age.replace(')','')
             age_list.append(age)
         print (f"{(x[1].index(link))+1} finished...")
     age_frame = pd.DataFrame(age_list, columns = ["Age"])

@@ -1,0 +1,114 @@
+
+{
+   "type": "record",
+   "name": "PaymentManagerRenewFailure",
+   "fields": [
+        {"name": "originatingSystem", "type": ["null", "string"] },
+        {"name": "activityTimestamp", "type": ["null", "string"] },
+        {"name": "activityType", "type": ["null", "string"] },
+        {"name": "orderId", "type": ["null", "string"] },
+        {"name": "purchaseType", "type": ["null", "string"] },
+        {"name": "provider", "type": ["null", "string"] },
+        {"name": "providerTerritory", "type": ["null", "string"] },
+        {"name": "householdId", "type": ["null", "string"] },
+        {"name": "proposition", "type": ["null", "string"] },
+        {"name": "requestId", "type": ["null", "string"] },
+        {"name": "failureDetails",
+            "type": ["null", 
+                {
+                "name": "failureDetails",
+                "type": "record",
+                "fields": [
+                    {"name": "reason", "type": ["null", "string"] },
+                    {"name": "code", "type": ["null", "string"] }
+                ]
+            }
+            ]
+        },
+        {"name": "subscriptions",
+         "type": [ "null", {
+                "type":"array",
+                "items":{
+                    "name": "subscriptions",
+                    "type": "record",
+                    "fields": [
+                        {"name": "id", "type": ["null", "string"] },
+                        {"name": "productId", "type": ["null", "string"] },
+                        {"name": "productStaticId", "type": ["null", "string"] },
+                        {"name": "entitlementIds", "type":{"type":"array","items":"string"} },
+                        {"name": "context",
+                         "type": {
+                         "name": "context",
+                         "type": "record",
+                         "fields": [
+                            {"name": "startDate", "type": ["null", "string"] },
+                            {"name": "isIncluded", "type": ["null", "string"] },
+                            {"name": "subscriptionType", "type": ["null", "string"] },
+                            {"name": "staticId", "type": ["null", "string"] },
+                            {"name": "offers",
+                                "type": [
+                                "null",
+                                {
+                                    "type": "array",
+                                    "items": {
+                                        "name":"offers",
+                                        "type": "record",
+                                        "fields": [
+                                            {"name": "startDate", "type": ["null", "string"] },
+                                            {"name": "endDate", "type": ["null", "string"] },
+                                            {"name": "id", "type": ["null", "string"] },
+                                            {"name": "staticId", "type": ["null", "string"] }
+                                        ]
+                                    }
+                                }
+                                ]
+                            }
+
+                                
+                            ]
+                        }
+						},
+                        {"name": "failureHandling",
+                        "type": [
+                         "null",
+                        {
+                        "name": "failureHandling",
+                        "type": "record",
+                        "fields": [
+                        {"name": "cancelOnFail", "type": ["null", "boolean"] }
+                        ]
+                        }
+
+                    ]
+	                }
+
+                    ]
+				}
+			}]
+		},			
+
+        {"name": "payment",
+         "type": [
+         "null",
+            {
+            "name": "payment",
+            "type": "record",
+            "fields": [
+                {"name": "customerReference", "type": ["null", "string"] },
+                {"name": "alias", "type": ["null", "string"] },
+                {"name": "paymentTransactionId", "type": ["null", "string"] },
+                {"name": "lastDigits", "type": ["null", "string"] },
+                {"name": "expiryDate", "type": ["null", "string"] },
+                {"name": "currency", "type": ["null", "string"] },
+                {"name": "paymentProvider", "type": ["null", "string"] },
+                {"name": "issuerCountry", "type": ["null", "string"] },
+                {"name": "method", "type": ["null", "string"] },
+                {"name": "amountAuthorised", "type": ["null", "string"] },
+                {"name": "paymentContractType", "type": ["null", "string"] }
+            ]
+        }
+
+        ]
+	    }
+    ]
+}
